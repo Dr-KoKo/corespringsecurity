@@ -1,4 +1,4 @@
-package io.security.corespringsecurity.security.configs;
+package io.security.corespringsecurity.config.security.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests((request) ->
                         request
-                                .requestMatchers("/").permitAll()
+                                .requestMatchers("/", "/users").permitAll()
                                 .requestMatchers("/mypage").hasRole("USER")
                                 .requestMatchers("/messages").hasRole("MANAGER")
                                 .requestMatchers("/config").hasRole("ADMIN")
