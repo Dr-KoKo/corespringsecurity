@@ -1,5 +1,6 @@
 package io.security.corespringsecurity.config.security.config;
 
+import io.security.corespringsecurity.config.security.provider.CustomAuthenticationProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -20,11 +21,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Slf4j
 public class SecurityConfig {
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    public void globalConfigure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
+    public void globalConfigure(AuthenticationManagerBuilder auth, CustomAuthenticationProvider provider) throws Exception {
+        auth.authenticationProvider(provider);
     }
 
     @Bean
