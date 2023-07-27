@@ -1,5 +1,6 @@
 package io.security.corespringsecurity.config.security.config;
 
+import io.security.corespringsecurity.config.security.common.CustomAuthenticationDetailsSource;
 import io.security.corespringsecurity.config.security.provider.CustomAuthenticationProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 @Slf4j
 public class SecurityConfig {
+    @Autowired
+    private CustomAuthenticationDetailsSource authenticationDetailsSource;
+
     @Autowired
     public void globalConfigure(AuthenticationManagerBuilder auth, CustomAuthenticationProvider provider) throws Exception {
         auth.authenticationProvider(provider);
@@ -51,6 +55,7 @@ public class SecurityConfig {
                         formLogin
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login_proc")
+                                .authenticationDetailsSource(authenticationDetailsSource)
                                 .defaultSuccessUrl("/")
                                 .permitAll()
                 )
