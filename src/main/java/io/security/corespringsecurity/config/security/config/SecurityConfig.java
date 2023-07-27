@@ -48,7 +48,13 @@ public class SecurityConfig {
                                 .requestMatchers("/config").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults());
+                .formLogin((formLogin) ->
+                        formLogin
+                                .loginPage("/login")
+                                .loginProcessingUrl("/login_proc")
+                                .defaultSuccessUrl("/")
+                                .permitAll()
+                );
 
         return http.build();
     }
