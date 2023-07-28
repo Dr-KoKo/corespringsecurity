@@ -40,7 +40,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         clearAuthenticationAttributes(request);
         // Use the DefaultSavedRequest URL
         String targetUrl = savedRequest.getRedirectUrl();
-        System.out.println(targetUrl);
+
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }
