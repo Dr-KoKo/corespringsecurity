@@ -1,6 +1,7 @@
 package io.security.corespringsecurity.config.security.config;
 
 import io.security.corespringsecurity.config.security.common.CustomAuthenticationDetailsSource;
+import io.security.corespringsecurity.config.security.handler.CustomAuthenticationSuccessHandler;
 import io.security.corespringsecurity.config.security.provider.CustomAuthenticationProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
     @Autowired
     private CustomAuthenticationDetailsSource authenticationDetailsSource;
+    @Autowired
+    private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
 
     @Autowired
     public void globalConfigure(AuthenticationManagerBuilder auth, CustomAuthenticationProvider provider) throws Exception {
@@ -57,6 +60,7 @@ public class SecurityConfig {
                                 .loginProcessingUrl("/login_proc")
                                 .authenticationDetailsSource(authenticationDetailsSource)
                                 .defaultSuccessUrl("/")
+                                .successHandler(authenticationSuccessHandler)
                                 .permitAll()
                 )
                 .logout((logout) ->
