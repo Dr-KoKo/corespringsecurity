@@ -1,6 +1,7 @@
 package io.security.corespringsecurity.config.security.config;
 
 import io.security.corespringsecurity.config.security.common.CustomAuthenticationDetailsSource;
+import io.security.corespringsecurity.config.security.handler.CustomAccessDeniedHandler;
 import io.security.corespringsecurity.config.security.handler.CustomAuthenticationFailureHandler;
 import io.security.corespringsecurity.config.security.handler.CustomAuthenticationSuccessHandler;
 import io.security.corespringsecurity.config.security.provider.CustomAuthenticationProvider;
@@ -28,6 +29,8 @@ public class SecurityConfig {
     private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
     @Autowired
     private CustomAuthenticationFailureHandler authenticationFailureHandler;
+    @Autowired
+    private CustomAccessDeniedHandler accessDeniedHandler;
 
     @Autowired
     public void globalConfigure(AuthenticationManagerBuilder auth, CustomAuthenticationProvider provider) throws Exception {
@@ -70,6 +73,10 @@ public class SecurityConfig {
                         logout
                                 .logoutRequestMatcher(AntPathRequestMatcher.antMatcher("/logout"))
                                 .logoutSuccessUrl("/")
+                )
+                .exceptionHandling((exceptionHandling) ->
+                        exceptionHandling
+                                .accessDeniedHandler(accessDeniedHandler)
                 );
 
         return http.build();
