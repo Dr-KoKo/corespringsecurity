@@ -1,6 +1,7 @@
 package io.security.corespringsecurity.config.security.config;
 
 import io.security.corespringsecurity.config.security.common.CustomAuthenticationDetailsSource;
+import io.security.corespringsecurity.config.security.handler.CustomAuthenticationFailureHandler;
 import io.security.corespringsecurity.config.security.handler.CustomAuthenticationSuccessHandler;
 import io.security.corespringsecurity.config.security.provider.CustomAuthenticationProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,8 @@ public class SecurityConfig {
     private CustomAuthenticationDetailsSource authenticationDetailsSource;
     @Autowired
     private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+    @Autowired
+    private CustomAuthenticationFailureHandler authenticationFailureHandler;
 
     @Autowired
     public void globalConfigure(AuthenticationManagerBuilder auth, CustomAuthenticationProvider provider) throws Exception {
@@ -48,7 +51,7 @@ public class SecurityConfig {
         http
                 .authorizeRequests((request) ->
                         request
-                                .requestMatchers("/", "/users").permitAll()
+                                .requestMatchers("/", "/users", "/login*").permitAll()
                                 .requestMatchers("/mypage").hasRole("USER")
                                 .requestMatchers("/messages").hasRole("MANAGER")
                                 .requestMatchers("/config").hasRole("ADMIN")
@@ -60,6 +63,7 @@ public class SecurityConfig {
                                 .loginProcessingUrl("/login_proc")
                                 .authenticationDetailsSource(authenticationDetailsSource)
                                 .successHandler(authenticationSuccessHandler)
+                                .failureHandler(authenticationFailureHandler)
                                 .permitAll()
                 )
                 .logout((logout) ->
