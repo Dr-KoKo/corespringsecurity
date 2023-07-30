@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +22,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
+@Order(1)
 @Slf4j
 public class SecurityConfig {
     @Autowired
@@ -33,7 +35,7 @@ public class SecurityConfig {
     private CustomAccessDeniedHandler accessDeniedHandler;
 
     @Autowired
-    public void globalConfigure(AuthenticationManagerBuilder auth, CustomAuthenticationProvider provider) throws Exception {
+    public void globalConfigure(AuthenticationManagerBuilder auth, CustomAuthenticationProvider provider) {
         auth.authenticationProvider(provider);
     }
 
@@ -52,8 +54,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests((request) ->
-                        request
+                .securityMatcher(request -> !"/api/login".equals(request.getRequestURI()))
+                .authorizeHttpRequests((authorizeHttpRequests) ->
+                        authorizeHttpRequests
                                 .requestMatchers("/", "/users", "/login*").permitAll()
                                 .requestMatchers("/mypage").hasRole("USER")
                                 .requestMatchers("/messages").hasRole("MANAGER")
