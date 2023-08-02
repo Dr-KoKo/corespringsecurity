@@ -18,7 +18,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatchers;
 
 @Configuration
 @EnableWebSecurity
@@ -41,9 +43,10 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web -> {
-            web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-        });
+        return (web) ->
+                web.ignoring()
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                        .requestMatchers("/error/**");
     }
 
     @Bean
@@ -52,9 +55,14 @@ public class SecurityConfig {
     }
 
     @Bean
+    public HttpSessionSecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher(request -> !"/api/login".equals(request.getRequestURI()))
+                .securityMatcher(RequestMatchers.not(AntPathRequestMatcher.antMatcher("/api/**")))
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers("/", "/users", "/login*").permitAll()
@@ -68,6 +76,7 @@ public class SecurityConfig {
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login_proc")
                                 .authenticationDetailsSource(authenticationDetailsSource)
+                                .securityContextRepository(securityContextRepository())
                                 .successHandler(authenticationSuccessHandler)
                                 .failureHandler(authenticationFailureHandler)
                                 .permitAll()
