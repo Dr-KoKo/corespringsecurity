@@ -44,7 +44,6 @@ public class AjaxSecurityConfig {
                                 .requestMatchers("/api/messages").hasRole("MANAGER")
                                 .anyRequest().authenticated()
                 )
-                .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((exceptionHandling) ->
                         exceptionHandling
                                 .authenticationEntryPoint(new AjaxLoginAuthenticationEntryPoint())
@@ -52,16 +51,14 @@ public class AjaxSecurityConfig {
                 )
                 .csrf((csrf) -> csrf.disable());
 
-        return http.build();
-    }
+        http
+                .apply(new AjaxLoginConfigurer())
+                .successHandlerAjax(new AjaxAuthenticationSuccessHandler())
+                .failureHandlerAjax(new AjaxAuthenticationFailureHandler())
+                .setAuthenticationManager(authenticationConfiguration.getAuthenticationManager())
+                .securityContextRepository(securityContextRepository)
+                .loginProcessingUrl("/api/login");
 
-    @Bean
-    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
-        AjaxLoginProcessingFilter filter = new AjaxLoginProcessingFilter();
-        filter.setAuthenticationManager(authenticationConfiguration.getAuthenticationManager());
-        filter.setSecurityContextRepository(securityContextRepository);
-        filter.setAuthenticationSuccessHandler(new AjaxAuthenticationSuccessHandler());
-        filter.setAuthenticationFailureHandler(new AjaxAuthenticationFailureHandler());
-        return filter;
+        return http.build();
     }
 }
