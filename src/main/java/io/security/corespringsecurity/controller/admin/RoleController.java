@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleController {
     private final RoleService roleService;
-    private final ModelMapper modelMapper;
 
     @GetMapping(value = "/admin/roles")
     public String getRoles(Model model) {
@@ -43,15 +42,15 @@ public class RoleController {
 
     @GetMapping(value = "/admin/roles/{id}")
     public String getRole(@PathVariable String id, Model model) {
-        Role role = roleService.getRole(Long.valueOf(id));
+        Role role = roleService.getRole(Long.parseLong(id));
         model.addAttribute("role", new RoleDto(String.valueOf(role.getId()), role.getRoleName(), role.getRoleDesc()));
         return "admin/role/detail";
     }
 
     @GetMapping(value = "/admin/roles/delete/{id}")
     public String removeResources(@PathVariable String id, Model model) {
-        Role role = roleService.getRole(Long.valueOf(id));
-        roleService.deleteRole(Long.valueOf(id));
+        Role role = roleService.getRole(Long.parseLong(id));
+        roleService.deleteRole(Long.parseLong(id));
         return "redirect:/admin/resources";
     }
 }

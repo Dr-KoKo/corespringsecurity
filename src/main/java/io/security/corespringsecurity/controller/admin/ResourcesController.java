@@ -61,7 +61,7 @@ public class ResourcesController {
     public String getResources(@PathVariable String id, Model model) {
         List<Role> roleList = roleService.getRoles();
         model.addAttribute("roleList", roleList);
-        Resources resources = resourcesService.getResources(Long.valueOf(id));
+        Resources resources = resourcesService.getResources(Long.parseLong(id));
         model.addAttribute("resources",
                 new ResourcesDto(
                         String.valueOf(resources.getId()),
@@ -77,8 +77,8 @@ public class ResourcesController {
 
     @GetMapping("/admin/resources/delete/{id}")
     public String removeResources(@PathVariable String id, Model model) {
-        Resources resources = resourcesService.getResources(Long.valueOf(id));
-        resourcesService.deleteResources(Long.valueOf(id));
+        Resources resources = resourcesService.getResources(Long.parseLong(id));
+        resourcesService.deleteResources(Long.parseLong(id));
         return "redirect:/admin/resources";
     }
 }

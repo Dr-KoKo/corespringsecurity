@@ -1,4 +1,4 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{admin/common/head :: adminHead}"></head>
 <body>
 <script type="text/javascript">
@@ -58,10 +58,10 @@
             <div class="form-group">
                 <div class="col-sm-offset-1 col-sm-10">
                     <button type="Submit" class="btn btn-dark btn-lg">등록</button>
-                    <a th:href="@{/logout}">
-                        <a class="btn btn-dark btn-lg" style="margin:10;" th:href="@{/admin/resources}">목록 </a>
-                        <a class="btn btn-dark btn-lg" style="margin:10;"
-                           th:href="@{'/admin/resources/delete/' + *{id}}">삭제</a>
+                    <a th:href="@{/logout}"></a>
+                    <a class="btn btn-dark btn-lg" style="margin:10;" th:href="@{/admin/resources}">목록 </a>
+                    <a class="btn btn-dark btn-lg" style="margin:10;"
+                       th:href="@{'/admin/resources/delete/' + *{id}}">삭제</a>
                 </div>
             </div>
         </form>
