@@ -1,6 +1,7 @@
 package io.security.corespringsecurity.config.security.service;
 
-import io.security.corespringsecurity.domain.Account;
+import io.security.corespringsecurity.domain.entity.Account;
+import io.security.corespringsecurity.domain.entity.Role;
 import io.security.corespringsecurity.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,10 +10,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
 @Service
+@Transactional(readOnly = true)
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
@@ -29,7 +32,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         ArrayList<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority(account.getRole()));
+        for (Role userRole : account.getUserRoles()) {
+            roles.add(new SimpleGrantedAuthority(userRole.getRoleName()));
+        }
+//        roles.add(new SimpleGrantedAuthority(account.getRole()));
 
         return new User(account.getUsername(), account.getPassword(), roles);
     }

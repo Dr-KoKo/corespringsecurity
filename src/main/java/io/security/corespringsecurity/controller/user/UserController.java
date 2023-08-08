@@ -1,8 +1,8 @@
 package io.security.corespringsecurity.controller.user;
 
 
-import io.security.corespringsecurity.domain.Account;
-import io.security.corespringsecurity.domain.AccountDto;
+import io.security.corespringsecurity.domain.dto.AccountDto;
+import io.security.corespringsecurity.domain.entity.Account;
 import io.security.corespringsecurity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -19,7 +19,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/mypage")
-    public String myPage() throws Exception {
+    public String myPage() {
         return "user/mypage";
     }
 
@@ -32,9 +32,7 @@ public class UserController {
     public String createUser(AccountDto accountDto) {
         Account createAccount = modelMapper.map(accountDto, Account.class);
         createAccount.setPassword(passwordEncoder.encode(createAccount.getPassword()));
-
         userService.createUser(createAccount);
-
         return "redirect:/";
     }
 }

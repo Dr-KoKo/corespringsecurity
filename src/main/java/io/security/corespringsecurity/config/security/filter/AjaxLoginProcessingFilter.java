@@ -2,7 +2,7 @@ package io.security.corespringsecurity.config.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.security.corespringsecurity.config.security.token.AjaxAuthenticationToken;
-import io.security.corespringsecurity.domain.AccountDto;
+import io.security.corespringsecurity.domain.dto.AccountDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
