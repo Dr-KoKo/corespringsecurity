@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
         Account account = userRepository.findById(id).orElse(new Account());
         List<String> roles = account.getUserRoles()
                 .stream()
-                .map(role -> role.getRoleName())
+                .map(Role::getRoleName)
                 .collect(Collectors.toList());
         return new AccountDto(String.valueOf(account.getId()), account.getUsername(), account.getPassword(), account.getEmail(), account.getAge(), roles);
     }
