@@ -4,6 +4,7 @@ import io.security.corespringsecurity.config.security.common.CustomAuthenticatio
 import io.security.corespringsecurity.config.security.handler.CustomAccessDeniedHandler;
 import io.security.corespringsecurity.config.security.handler.CustomAuthenticationFailureHandler;
 import io.security.corespringsecurity.config.security.handler.CustomAuthenticationSuccessHandler;
+import io.security.corespringsecurity.config.security.manager.CustomAuthorizationManager;
 import io.security.corespringsecurity.config.security.provider.CustomAuthenticationProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatchers;
@@ -35,6 +37,8 @@ public class SecurityConfig {
     private CustomAuthenticationFailureHandler authenticationFailureHandler;
     @Autowired
     private CustomAccessDeniedHandler accessDeniedHandler;
+    @Autowired
+    private CustomAuthorizationManager authorizationManager;
 
     @Autowired
     public void globalConfigure(AuthenticationManagerBuilder auth, CustomAuthenticationProvider provider) {
@@ -66,9 +70,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers("/", "/users", "/login*").permitAll()
-                                .requestMatchers("/mypage").hasRole("USER")
-                                .requestMatchers("/messages").hasRole("MANAGER")
-                                .requestMatchers("/config").hasRole("ADMIN")
+//                                .requestMatchers("/mypage").hasRole("USER")
+//                                .requestMatchers("/messages").hasRole("MANAGER")
+//                                .requestMatchers("/config").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .formLogin((formLogin) ->
@@ -91,6 +95,8 @@ public class SecurityConfig {
                                 .accessDeniedHandler(accessDeniedHandler)
                 );
 
+        http
+                .addFilterBefore(new AuthorizationFilter(authorizationManager), AuthorizationFilter.class);
         return http.build();
     }
 }
