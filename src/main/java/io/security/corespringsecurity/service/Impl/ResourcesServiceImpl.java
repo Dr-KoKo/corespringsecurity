@@ -1,5 +1,6 @@
 package io.security.corespringsecurity.service.Impl;
 
+import io.security.corespringsecurity.config.security.manager.CustomAuthorizationManager;
 import io.security.corespringsecurity.domain.entity.Resources;
 import io.security.corespringsecurity.repository.ResourcesRepository;
 import io.security.corespringsecurity.service.ResourcesService;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResourcesServiceImpl implements ResourcesService {
     private final ResourcesRepository ResourcesRepository;
+    private final CustomAuthorizationManager authorizationManager;
 
     public Resources getResources(long id) {
         return ResourcesRepository.findById(id).orElse(new Resources());
@@ -29,10 +31,12 @@ public class ResourcesServiceImpl implements ResourcesService {
     @Transactional
     public void createResources(Resources resources) {
         ResourcesRepository.save(resources);
+        authorizationManager.reload();
     }
 
     @Transactional
     public void deleteResources(long id) {
         ResourcesRepository.deleteById(id);
+        authorizationManager.reload();
     }
 }

@@ -19,9 +19,11 @@ import java.util.function.Supplier;
 
 @Component
 public class CustomAuthorizationManager implements AuthorizationManager<HttpServletRequest> {
+    private SecurityResourceService securityResourceService;
     private static LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new LinkedHashMap<>();
 
     public CustomAuthorizationManager(SecurityResourceService securityResourceService) {
+        this.securityResourceService = securityResourceService;
         CustomAuthorizationManager.requestMap = securityResourceService.getResourceList();
     }
 
@@ -48,5 +50,11 @@ public class CustomAuthorizationManager implements AuthorizationManager<HttpServ
         List<String> authList = authority.stream().map(ConfigAttribute::getAttribute).toList();
         boolean decision = authorities.stream().map(GrantedAuthority::getAuthority).anyMatch((auth) -> authList.contains(auth));
         return new AuthorizationDecision(decision);
+    }
+
+    public void reload() {
+        synchronized (CustomAuthorizationManager.requestMap) {
+            CustomAuthorizationManager.requestMap = securityResourceService.getResourceList();
+        }
     }
 }
