@@ -9,7 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher.MatchResult;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-@Component
 public class CustomAuthorizationManager implements AuthorizationManager<HttpServletRequest> {
     private SecurityResourceService securityResourceService;
     private static LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new LinkedHashMap<>();

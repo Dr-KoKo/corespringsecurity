@@ -4,8 +4,9 @@ import io.security.corespringsecurity.config.security.common.CustomAuthenticatio
 import io.security.corespringsecurity.config.security.handler.CustomAccessDeniedHandler;
 import io.security.corespringsecurity.config.security.handler.CustomAuthenticationFailureHandler;
 import io.security.corespringsecurity.config.security.handler.CustomAuthenticationSuccessHandler;
-import io.security.corespringsecurity.config.security.manager.CustomAuthorizationManager;
+import io.security.corespringsecurity.config.security.manager.PermitAllAuthorizationManager;
 import io.security.corespringsecurity.config.security.provider.CustomAuthenticationProvider;
+import io.security.corespringsecurity.config.security.service.SecurityResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -38,7 +39,9 @@ public class SecurityConfig {
     @Autowired
     private CustomAccessDeniedHandler accessDeniedHandler;
     @Autowired
-    private CustomAuthorizationManager authorizationManager;
+    private SecurityResourceService securityResourceService;
+
+    private String[] permitAllResources = {"/", "users", "/login*", "/error/**", "/denied"};
 
     @Autowired
     public void globalConfigure(AuthenticationManagerBuilder auth, CustomAuthenticationProvider provider) {
@@ -67,14 +70,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher(RequestMatchers.not(AntPathRequestMatcher.antMatcher("/api/**")))
-                .authorizeHttpRequests((authorizeHttpRequests) ->
-                        authorizeHttpRequests
-                                .requestMatchers("/", "/users", "/login*").permitAll()
+//                .authorizeHttpRequests((authorizeHttpRequests) ->
+//                                authorizeHttpRequests
+//                                        .requestMatchers("/", "/users", "/login*").permitAll()
 //                                .requestMatchers("/mypage").hasRole("USER")
 //                                .requestMatchers("/messages").hasRole("MANAGER")
 //                                .requestMatchers("/config").hasRole("ADMIN")
-                                .anyRequest().authenticated()
-                )
+//                                        .anyRequest().authenticated()
+//                )
                 .formLogin((formLogin) ->
                         formLogin
                                 .loginPage("/login")
@@ -83,7 +86,7 @@ public class SecurityConfig {
                                 .securityContextRepository(securityContextRepository())
                                 .successHandler(authenticationSuccessHandler)
                                 .failureHandler(authenticationFailureHandler)
-                                .permitAll()
+//                                .permitAll()
                 )
                 .logout((logout) ->
                         logout
@@ -96,7 +99,12 @@ public class SecurityConfig {
                 );
 
         http
-                .addFilterBefore(new AuthorizationFilter(authorizationManager), AuthorizationFilter.class);
+                .addFilterBefore(new AuthorizationFilter(authorizationManager()), AuthorizationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public PermitAllAuthorizationManager authorizationManager() {
+        return new PermitAllAuthorizationManager(securityResourceService, permitAllResources);
     }
 }
