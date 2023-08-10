@@ -3,6 +3,7 @@ package io.security.corespringsecurity.config.security.manager;
 import io.security.corespringsecurity.config.security.service.SecurityResourceService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.core.Authentication;
@@ -19,10 +20,12 @@ import java.util.function.Supplier;
 public class CustomAuthorizationManager implements AuthorizationManager<HttpServletRequest> {
     private SecurityResourceService securityResourceService;
     private static LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new LinkedHashMap<>();
+    private RoleHierarchy roleHierarchy;
 
-    public CustomAuthorizationManager(SecurityResourceService securityResourceService) {
+    public CustomAuthorizationManager(SecurityResourceService securityResourceService, RoleHierarchy roleHierarchy) {
         this.securityResourceService = securityResourceService;
-        CustomAuthorizationManager.requestMap = securityResourceService.getResourceList();
+        this.requestMap = securityResourceService.getResourceList();
+        this.roleHierarchy = roleHierarchy;
     }
 
     @Override
@@ -44,7 +47,7 @@ public class CustomAuthorizationManager implements AuthorizationManager<HttpServ
     }
 
     private AuthorizationDecision checkInternal(Authentication authentication, List<ConfigAttribute> authority) {
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = roleHierarchy.getReachableGrantedAuthorities(authentication.getAuthorities());
         List<String> authList = authority.stream().map(ConfigAttribute::getAttribute).toList();
         boolean decision = authorities.stream().map(GrantedAuthority::getAuthority).anyMatch((auth) -> authList.contains(auth));
         return new AuthorizationDecision(decision);

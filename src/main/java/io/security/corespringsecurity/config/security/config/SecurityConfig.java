@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -41,7 +42,7 @@ public class SecurityConfig {
     @Autowired
     private SecurityResourceService securityResourceService;
 
-    private String[] permitAllResources = {"/", "users", "/login*", "/error/**", "/denied"};
+    private final String[] permitAllResources = {"/", "users", "/login*", "/error/**", "/denied"};
 
     @Autowired
     public void globalConfigure(AuthenticationManagerBuilder auth, CustomAuthenticationProvider provider) {
@@ -79,13 +80,13 @@ public class SecurityConfig {
 //                                        .anyRequest().authenticated()
 //                )
                 .formLogin((formLogin) ->
-                        formLogin
-                                .loginPage("/login")
-                                .loginProcessingUrl("/login_proc")
-                                .authenticationDetailsSource(authenticationDetailsSource)
-                                .securityContextRepository(securityContextRepository())
-                                .successHandler(authenticationSuccessHandler)
-                                .failureHandler(authenticationFailureHandler)
+                                formLogin
+                                        .loginPage("/login")
+                                        .loginProcessingUrl("/login_proc")
+                                        .authenticationDetailsSource(authenticationDetailsSource)
+                                        .securityContextRepository(securityContextRepository())
+                                        .successHandler(authenticationSuccessHandler)
+                                        .failureHandler(authenticationFailureHandler)
 //                                .permitAll()
                 )
                 .logout((logout) ->
@@ -105,6 +106,13 @@ public class SecurityConfig {
 
     @Bean
     public PermitAllAuthorizationManager authorizationManager() {
-        return new PermitAllAuthorizationManager(securityResourceService, permitAllResources);
+        return new PermitAllAuthorizationManager(securityResourceService, roleHierarchy(), permitAllResources);
+    }
+
+    @Bean
+    public RoleHierarchyImpl roleHierarchy() {
+        var hierarchy = new RoleHierarchyImpl();
+        hierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER\n" + "ROLE_MANAGER > ROLE_USER\n");
+        return hierarchy;
     }
 }

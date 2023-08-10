@@ -2,6 +2,7 @@ package io.security.corespringsecurity.config.security.manager;
 
 import io.security.corespringsecurity.config.security.service.SecurityResourceService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -14,8 +15,8 @@ import java.util.function.Supplier;
 public class PermitAllAuthorizationManager extends CustomAuthorizationManager {
     private final static List<RequestMatcher> permitAllRequestMatchers = new ArrayList<>();
 
-    public PermitAllAuthorizationManager(SecurityResourceService securityResourceService, String... permitAllResources) {
-        super(securityResourceService);
+    public PermitAllAuthorizationManager(SecurityResourceService securityResourceService, RoleHierarchy roleHierarchy, String... permitAllResources) {
+        super(securityResourceService, roleHierarchy);
         for (String resource : permitAllResources) {
             permitAllRequestMatchers.add(new AntPathRequestMatcher(resource));
         }
