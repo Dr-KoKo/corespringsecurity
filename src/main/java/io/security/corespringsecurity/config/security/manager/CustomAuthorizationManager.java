@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class CustomAuthorizationManager implements AuthorizationManager<HttpServletRequest> {
-    private SecurityResourceService securityResourceService;
+    protected final SecurityResourceService securityResourceService;
     private static LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new LinkedHashMap<>();
     private RoleHierarchy roleHierarchy;
 
@@ -26,11 +26,6 @@ public class CustomAuthorizationManager implements AuthorizationManager<HttpServ
         this.securityResourceService = securityResourceService;
         this.requestMap = securityResourceService.getResourceList();
         this.roleHierarchy = roleHierarchy;
-    }
-
-    @Override
-    public void verify(Supplier<Authentication> authentication, HttpServletRequest request) {
-        AuthorizationManager.super.verify(authentication, request);
     }
 
     @Override

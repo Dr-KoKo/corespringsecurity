@@ -23,21 +23,6 @@ public class PermitAllAuthorizationManager extends CustomAuthorizationManager {
     }
 
     @Override
-    public void verify(Supplier<Authentication> authentication, HttpServletRequest request) {
-        boolean permit = false;
-        for (RequestMatcher requestMatcher : permitAllRequestMatchers) {
-            if (requestMatcher.matches(request)) {
-                permit = true;
-                break;
-            }
-        }
-        if (permit) {
-            return;
-        }
-        super.verify(authentication, request);
-    }
-
-    @Override
     public AuthorizationDecision check(Supplier<Authentication> authentication, HttpServletRequest request) {
         boolean permit = false;
         for (RequestMatcher requestMatcher : permitAllRequestMatchers) {

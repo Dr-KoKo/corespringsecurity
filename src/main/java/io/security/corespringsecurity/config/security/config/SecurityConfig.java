@@ -4,9 +4,11 @@ import io.security.corespringsecurity.config.security.common.CustomAuthenticatio
 import io.security.corespringsecurity.config.security.handler.CustomAccessDeniedHandler;
 import io.security.corespringsecurity.config.security.handler.CustomAuthenticationFailureHandler;
 import io.security.corespringsecurity.config.security.handler.CustomAuthenticationSuccessHandler;
+import io.security.corespringsecurity.config.security.manager.CustomIpAuthorizationManager;
 import io.security.corespringsecurity.config.security.manager.PermitAllAuthorizationManager;
 import io.security.corespringsecurity.config.security.provider.CustomAuthenticationProvider;
 import io.security.corespringsecurity.config.security.service.SecurityResourceService;
+import jakarta.servlet.DispatcherType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -54,6 +56,7 @@ public class SecurityConfig {
         return (web) ->
                 web.ignoring()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR)
                         .requestMatchers("/error/**");
     }
 
@@ -105,8 +108,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PermitAllAuthorizationManager authorizationManager() {
-        return new PermitAllAuthorizationManager(securityResourceService, roleHierarchy(), permitAllResources);
+    public CustomIpAuthorizationManager authorizationManager() {
+        return new CustomIpAuthorizationManager(securityResourceService, roleHierarchy(), permitAllResources);
     }
 
     @Bean
